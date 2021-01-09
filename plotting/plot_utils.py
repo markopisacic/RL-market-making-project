@@ -5,7 +5,47 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-EpisodeStats = namedtuple("Stats", ["episode_lengths", "episode_rewards", "episode_profits", "episode_inventory"])
+EpisodeStats = namedtuple("Stats",
+                          ["label", "episode_lengths", "episode_rewards", "episode_profits", "episode_inventory"])
+
+
+def plot_relative_profits(statlist, referent=0):
+    """
+    Plot profits of multiple EpisodeStats given, relative to specific agent.
+    """
+    profits = np.array(list(map(lambda s: s.episode_profits, statlist)))
+    profits -= 1000
+    profits = np.cumsum(profits, axis=1)
+    profits -= profits[referent]
+
+    for i in range(len(statlist)):
+        plt.plot(profits[i], label=statlist[i].label)
+
+    plt.legend(loc="best")
+    plt.xlabel("Episode")
+    plt.ylabel("Cumulative profit")
+    plt.title("Cumulative profit relative to Zero-tick agent over time")
+
+    plt.show()
+
+
+def plot_relative_invs(statlist, referent=0):
+    """
+    Plot cumulative mean inventories of multiple EpisodeStats given, relative to specific agent.
+    """
+    invs = np.array(list(map(lambda s: s.episode_inventory, statlist)))
+    invs = np.cumsum(invs, axis=1)
+    invs -= invs[referent]
+
+    for i in range(len(statlist)):
+        plt.plot(invs[i], label=statlist[i].label)
+
+    plt.legend(loc="best")
+    plt.xlabel("Episode")
+    plt.ylabel("Mean absolute episode inventory")
+    plt.title("Absolute cumulative inventory relative to Zero-tick agent over time")
+
+    plt.show()
 
 
 def plot_value_heatmap(q):

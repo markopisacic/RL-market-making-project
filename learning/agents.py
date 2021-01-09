@@ -31,11 +31,11 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
     Q = defaultdict(lambda: np.zeros(env.action_space_size))
 
     # Keeps track of useful statistics
-    stats = EpisodeStats(
-        episode_lengths=np.zeros(num_episodes),
-        episode_rewards=np.zeros(num_episodes),
-        episode_profits=np.zeros(num_episodes),
-        episode_inventory=np.zeros(num_episodes))
+    stats = EpisodeStats("Q-learning",
+                         episode_lengths=np.zeros(num_episodes),
+                         episode_rewards=np.zeros(num_episodes),
+                         episode_profits=np.zeros(num_episodes),
+                         episode_inventory=np.zeros(num_episodes))
 
     # The policy we're following
     policy = make_epsilon_greedy_policy(Q, epsilon, env.action_space_size)
@@ -83,11 +83,11 @@ def random_actions(env, num_episodes):
     """
 
     # Keeps track of useful statistics
-    stats = EpisodeStats(
-        episode_lengths=np.zeros(num_episodes),
-        episode_rewards=np.zeros(num_episodes),
-        episode_profits=np.zeros(num_episodes),
-        episode_inventory=np.zeros(num_episodes))
+    stats = EpisodeStats("Random actions",
+                         episode_lengths=np.zeros(num_episodes),
+                         episode_rewards=np.zeros(num_episodes),
+                         episode_profits=np.zeros(num_episodes),
+                         episode_inventory=np.zeros(num_episodes))
 
     for i_episode in range(num_episodes):
         if (i_episode + 1) % 10 == 0:
@@ -123,11 +123,11 @@ def zero_tick(env, num_episodes):
     """
 
     # Keeps track of useful statistics
-    stats = EpisodeStats(
-        episode_lengths=np.zeros(num_episodes),
-        episode_rewards=np.zeros(num_episodes),
-        episode_profits=np.zeros(num_episodes),
-        episode_inventory=np.zeros(num_episodes))
+    stats = EpisodeStats("Zero-tick",
+                         episode_lengths=np.zeros(num_episodes),
+                         episode_rewards=np.zeros(num_episodes),
+                         episode_profits=np.zeros(num_episodes),
+                         episode_inventory=np.zeros(num_episodes))
 
     for i_episode in range(num_episodes):
         if (i_episode + 1) % 10 == 0:
@@ -147,9 +147,10 @@ def zero_tick(env, num_episodes):
             stats.episode_rewards[i_episode] += reward
             stats.episode_lengths[i_episode] = t
             stats.episode_profits[i_episode] = w
-            stats.episode_inventory[i_episode] = i
+            stats.episode_inventory[i_episode] += abs(i)
 
             if done:
+                stats.episode_inventory[i_episode] /= t
                 break
 
     return None, stats
