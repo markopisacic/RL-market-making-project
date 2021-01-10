@@ -21,7 +21,7 @@ def make_epsilon_greedy_policy(Q, epsilon, nA):
     return policy_fn
 
 
-def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
+def q_learning(env, num_episodes, discount_factor=0.9, alpha=0.5, epsilon=0.1):
     """
     Q-Learning algorithm: Off-policy TD control. Finds the optimal greedy policy
     while following an epsilon-greedy policy
@@ -60,7 +60,7 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
             stats.episode_rewards[i_episode] += reward
             stats.episode_lengths[i_episode] = t
             stats.episode_profits[i_episode] = w
-            stats.episode_inventory[i_episode] = i
+            stats.episode_inventory[i_episode] += abs(i)
 
             # TD Update
             best_next_action = np.argmax(Q[next_state])
@@ -69,6 +69,7 @@ def q_learning(env, num_episodes, discount_factor=1.0, alpha=0.5, epsilon=0.1):
             Q[state][action] += alpha * td_delta
 
             if done:
+                stats.episode_inventory[i_episode] /= t
                 break
 
             state = next_state
@@ -108,9 +109,10 @@ def random_actions(env, num_episodes):
             stats.episode_rewards[i_episode] += reward
             stats.episode_lengths[i_episode] = t
             stats.episode_profits[i_episode] = w
-            stats.episode_inventory[i_episode] = i
+            stats.episode_inventory[i_episode] += abs(i)
 
             if done:
+                stats.episode_inventory[i_episode] /= t
                 break
 
     return None, stats
